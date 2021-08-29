@@ -31,7 +31,7 @@ class Query(ObjectType):
         db.session.add(new_version_work_plan)
         db.session.commit()
 
-        return "ok"
+        return {"data": "ok"}
 
 shema = graphene.Schema(query=Query, auto_camelcase=False )
 
