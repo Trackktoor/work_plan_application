@@ -2,7 +2,9 @@ from datetime import datetime
 from enum import unique
 from flask_sqlalchemy import SQLAlchemy
 
+
 db = SQLAlchemy()
+
 
 work_plans_works = db.Table('work_plans_works',
                             db.Column('work_plan_id', db.Integer, db.ForeignKey('work_plan.id')),
@@ -12,7 +14,7 @@ work_plans_works = db.Table('work_plans_works',
 class Work_plan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))
-    version = db.Column(db.Integer)
+    version = db.Column(db.Integer, default=1)
 
     works = db.relationship('Work', secondary=work_plans_works, backref=db.backref(name='work_plans_works', lazy='dynamic'))
 
