@@ -17,7 +17,7 @@ class Work_plan(db.Model):
     version = db.Column(db.Integer, default=1)
 
     works = db.relationship('Work', secondary=work_plans_works, backref=db.backref(name='work_plans_works', lazy='dynamic'))
-
+    
     def __repr__(self):
         return '<Work_plan id: {}, title: {}>'.format(self.id, self.title)
 
