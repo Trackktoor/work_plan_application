@@ -32,10 +32,12 @@ class Query(ObjectType):
         work = Work(title=title_work, date_start=date_start, date_end=date_end)
         work_plan = Work_plan.query.filter(Work_plan.id == work_plan_id).first_or_404() 
 
-        new_version_work_plan = Work_plan(title=work_plan.title[:-2]+" "+str(work_plan.version+1), version=work_plan.version+1, id=work_plan.id+1)
+        print(work.id)
+
+        new_version_work_plan = Work_plan(title=work_plan.title, version=work_plan.version+1, id=work_plan.id+1)
         for w in [w for w in work_plan.works]:
             new_version_work_plan.works.append(w)
-        print(work)
+
         new_version_work_plan.works.append(work)
 
         db.session.add(work)
@@ -44,32 +46,30 @@ class Query(ObjectType):
 
         return {"data": "ok"}
 
-    def resolve_all_versions_for_work_plan(self, info, work_plan_id):
-        work_plans = Work_plan.query.filter(Work_plan.id == work_plan_id).all()
+    def resolve_all_versions_for_work_plan(self, info, work_plan_title):    
+        work_plans = Work_plan.query.filter(Work_plan.title == work_plan_title).all()
         return work_plans
 
     def resolve_delete_work(self, info, id, work_plan_id):
         work_plan = Work_plan.query.filter(Work_plan.id == work_plan_id).first()
-        try:
-            work = [work for work in work_plan.works if work.id == int(id)][0]
-            print(work_plan.works)
 
-            new_version_work_plan = Work_plan(title=work_plan.title[:-2]+" "+str(work_plan.version+1), version=work_plan.version+1, id=work_plan.id+1)
+        work = [work for work in work_plan.works if work.id == int(id)][0]
 
-            for w in [w for w in work_plan.works]:
-                new_version_work_plan.works.append(w)
+        new_version_work_plan = Work_plan(title=work_plan.title, version=work_plan.version+1, id=Work_plan.query.all()[-1].id+1)
 
-            new_version_work_plan.works.remove(work) 
+        for w in [w for w in work_plan.works]:
+            new_version_work_plan.works.append(w)
 
-            db.session.add(work)
-            db.session.add(new_version_work_plan)
-            db.session.commit()
+        new_version_work_plan.works.remove(work) 
+        db.session.add(work)
+        print(new_version_work_plan.id)
+        db.session.add(new_version_work_plan)
+        db.session.commit()
 
-            return {"data": ["ok"]}
-        except:
-            return {"data": ["Err"]}
+        return {"data": ["ok"]}
 
-    def resolve_change_work(self, info, work_plan_id, id, change): # 'date_start: 2021-08-30 13:12:00'
+
+    def resolve_change_work(self, info, work_plan_id, id, change): # 'date_start=2021-08-30 13:12:00'
         work_plan = Work_plan.query.filter(Work_plan.id == work_plan_id).first()
         work = [work for work in work_plan.works if work.id == int(id)][0]
 
@@ -85,7 +85,7 @@ class Query(ObjectType):
                 new_work.date_end = par[1]
 
     
-        new_version_work_plan = Work_plan(title=work_plan.title[:-2]+" "+str(work_plan.version+1), version=work_plan.version+1, id=work_plan.id+1)
+        new_version_work_plan = Work_plan(title=work_plan.title, version=work_plan.version+1, id=work_plan.id+1)
         for w in [w for w in work_plan.works]:
             if not w.id == work.id:
                 new_version_work_plan.works.append(w)
@@ -101,8 +101,6 @@ class Query(ObjectType):
         
         return 'WorkPlanQuery'
 
-
-        
 
 shema = graphene.Schema(query=Query, auto_camelcase=False )
 
