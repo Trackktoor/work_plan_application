@@ -129,7 +129,7 @@
 ### Пример запроса
 ```GraphQL
 {
-    change_work(work_plan_id: 12, id: 16, change:"date_start=2021-08-30 13:12:00,date_end=2021-08-30 13:12:00"){
+    change_work(work_plan_id: 12, id: 16, change:"date_start=2021-08-30 13:12:00,date_end="2021-08-30 13:12:00"){
         title
     }
 }
